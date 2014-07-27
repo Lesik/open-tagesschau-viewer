@@ -1,24 +1,27 @@
 package org.androidfromfrankfurt.tagesschau;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
+
+import org.xml.sax.SAXException;
+
+import nl.matshofman.saxrssreader.RssFeed;
+import nl.matshofman.saxrssreader.RssItem;
+import nl.matshofman.saxrssreader.RssReader;
+import android.app.Activity;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.ListView;
 
 import com.manuelpeinado.fadingactionbar.FadingActionBarHelper;
 
-import android.app.Activity;
-import android.graphics.drawable.ColorDrawable;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-
-
 public class TagesschauActivity extends Activity {
-    private ArrayAdapter<String> adapter;
+    private MyListAdapter tagesschauAdapter;
+    private ArrayList<TagesschauItem> tagesschauItemArray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,31 +33,63 @@ public class TagesschauActivity extends Activity {
             .contentLayout(R.layout.activity_tagesschau_content);
         setContentView(helper.createView(this));
         helper.initActionBar(this);
-
-        ListView listView = (ListView) findViewById(android.R.id.list);
-        ArrayList<String> items = loadItems(R.raw.sample_list);
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
-        listView.setAdapter(adapter);
-    }
-
-    /**
-     * @return A list of Strings read from the specified resource
-     */
-    private ArrayList<String> loadItems(int rawResourceId) {
-        try {
-            ArrayList<String> countries = new ArrayList<String>();
-            InputStream inputStream = getResources().openRawResource(rawResourceId);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                countries.add(line);
+        
+        tagesschauItemArray = new ArrayList<TagesschauItem>();
+        tagesschauAdapter = new MyListAdapter(tagesschauItemArray, getApplication());
+        ListView list = (ListView)findViewById(android.R.id.list);
+    	list.setDivider(null);
+    	list.setDividerHeight(20);
+    	list.setPadding(20, 20, 20, 20);
+    	list.setClipToPadding(false);	// !important
+    	list.setVerticalScrollBarEnabled(true);
+    	list.setScrollBarStyle(ListView.SCROLLBARS_OUTSIDE_OVERLAY);
+    	list.setBackgroundColor(getResources().getColor(R.color.activity_background));
+        list.setAdapter(tagesschauAdapter);
+        
+        Thread thread = new Thread(new Runnable(){
+            @Override
+            public void run() {
+        		try {
+        			URL url = new URL("http://www.tagesschau.de/export/video-podcast/webl/tagesschau/");
+        	        RssFeed feed = RssReader.read(url);
+        	        ArrayList<RssItem> rssItems = feed.getRssItems();
+        	        for(RssItem rssItem : rssItems) {
+        	            TagesschauItem tagesschauItem = new TagesschauItem();
+        	            tagesschauItem.title = rssItem.getTitle();
+        	            tagesschauItem.date = rssItem.getPubDate().toString();
+        	            tagesschauItem.description = rssItem.getDescription();
+        	            tagesschauItemArray.add(tagesschauItem);
+        	            runOnUiThread(new Runnable() {
+							
+							@Override
+							public void run() {
+						        tagesschauAdapter.notifyDataSetChanged();
+							}
+						});
+        	        }
+        		}
+        		catch (SAXException e) {
+        			e.printStackTrace();
+        		}
+        		catch (IOException e) {
+        			e.printStackTrace();
+        		}
             }
-            reader.close();
-            return countries;
-        } catch (IOException e) {
-            return null;
-        }
+        });
+
+        thread.start();
+        
+//		for (int i = 0; i < tagesschauItemList.size(); i++) {
+//			Log.e(STORAGE_SERVICE, tagesschauItemList.get(i).getTitle());
+//			TagesschauItem tagesschauItem = new TagesschauItem();
+//			tagesschauItem.title = tagesschauItemList.get(i).getTitle();
+//			tagesschauItem.date = tagesschauItemList.get(i).getDate();
+//			tagesschauItem.description = tagesschauItemList.get(i).getDescription();
+//			
+//			tagesschauItemArray.add(tagesschauItem);
+//		}
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -65,13 +100,10 @@ public class TagesschauActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_settings) {
-            changeDataset();
+//            changeDataset();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void changeDataset() {
-      adapter.notifyDataSetChanged();
-  }
 }

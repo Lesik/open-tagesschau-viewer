@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Taken from Google Now version 3.1.8.914827 for Android -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/background_card"
+    android:orientation="vertical" >
+
+	<FrameLayout
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:baselineAligned="false">
+	    
+	    <TextView
+	        android:id="@id/card_title"
+	        style="@style/card_text_title"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content" />
+	    
+	    <ImageButton
+			android:layout_gravity="end|top|center"
+			android:id="@id/card_button_threedot"
+			android:layout_width="@dimen/card_button_height"
+			android:layout_height="@dimen/card_button_height"
+			style="@style/card_button_threedot" />
+	    
+	</FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_marginBottom="4.0dip"
+        android:layout_marginLeft="@dimen/card_padding"
+        android:layout_marginRight="@dimen/card_padding" >
+        
+		<TextView
+		    android:id="@id/card_date"
+		    style="@style/card_text_small"
+			android:layout_width="wrap_content"
+		    android:layout_height="wrap_content" />
+		
+        <TextView
+            android:id="@id/card_description"
+            style="@style/card_text_small"
+			android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+		
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@id/card_button_download"
+            style="@style/card_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="50"
+            android:drawableLeft="@drawable/ic_button_download"
+            android:ellipsize="end"
+            android:text="@string/card_button_download"
+            android:visibility="visible" />
+
+    </LinearLayout>
+    <!-- android:drawableLeft="@drawable/ic_action_set_wallpaper" -->
+</LinearLayout>

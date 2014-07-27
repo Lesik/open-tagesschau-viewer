@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+   	<item type="id" name="card_title" />
+   	<item type="id" name="card_date" />
+	<item type="id" name="card_description" />
+	<item type="id" name="card_button_threedot" />
+   	<item type="id" name="card_button_download" />
+   	
+	<item type="id" name="card_separator"></item>
+</resources>
